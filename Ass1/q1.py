@@ -11,6 +11,7 @@ imgar = np.array(img)
 print(imgar)
 print(imgar.shape)
 
+#-------------creat a list of even number----------------
 t_list =[]
 for i in range(0, 256, 2):
     t_list.append(i)
