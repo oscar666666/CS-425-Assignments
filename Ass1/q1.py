@@ -22,6 +22,7 @@ imgar = np.delete(imgar, t_list, 1)#remove every second column
 print(imgar.shape)
 img = Image.fromarray(imgar)
 img.save('128x128.png')
+np.array(imgar).tofile("128x128.raw")
 
 
 #------------produce 64x64----------------------------
@@ -31,6 +32,7 @@ imgar = np.delete(imgar, t_list, 1)#remove every second column
 print(imgar.shape)
 img = Image.fromarray(imgar)
 img.save('64x64.png')
+np.array(imgar).tofile("64x64.raw")
 
 
 #------------produce 32x32----------------------------
@@ -40,4 +42,5 @@ imgar = np.delete(imgar, t_list, 1)#remove every second column
 print(imgar.shape)
 img = Image.fromarray(imgar)
 img.save('32x32.png')
+np.array(imgar).tofile("32x32.raw")
 
