@@ -6,6 +6,35 @@ import cv2
 import math
 import cmath
 
+def FFT_Row():
+    I_list = []
+    for i in range(0, 256, 1):
+        I_list.append(i)
+    for i in range(0, 256, 1):
+        I_list[i] = reverseBits(i,8)
+    print(I_list)
+
+#https://www.geeksforgeeks.org/reverse-bits-positive-integer-number-python/
+# Function to reverse bits of positive  
+# integer number 
+  
+def reverseBits(num,bitSize): 
+  
+     # convert number into binary representation 
+     # output will be like bin(10) = '0b10101' 
+     binary = bin(num) 
+  
+     # skip first two characters of binary 
+     # representation string and reverse 
+     # remaining string and then append zeros 
+     # after it. binary[-1:1:-1]  --> start 
+     # from last character and reverse it until 
+     # second last character from left 
+     reverse = binary[-1:1:-1] 
+     reverse = reverse + (bitSize - len(reverse))*'0'
+  
+     # converts reversed binary string into integer 
+     return int(reverse,2) 
 
 def FFT(name):
 
@@ -23,41 +52,7 @@ def FFT(name):
     F2 = imgar.copy()
 
 #-----------------------Rearrange array elements--------------------------
-    for height in range(0, 256, 1):
-        pair1 = []
-        pair2 = []
-        pair3 = []
-        pair4 = []
-        for width in range(0, 256, 1):
-            if(width % 2 == 0 and width <= 127):
-                pair1.append(imgar[height][width])
-            if(width % 2 == 1 and width <= 127):
-                pair2.append(imgar[height][width])
-            if(width % 2 == 0 and width > 127):
-                pair3.append(imgar[height][width])
-            if(width % 2 == 1 and width > 127):
-                pair4.append(imgar[height][width])
-            
-        for width in range(0, 256, 1):
-            if(width % 2 == 0 and width <= 127):
-                imgar_rearrange[height][width] = pair1.pop(0)
-            if(width % 2 == 1 and width <= 127):
-                imgar_rearrange[height][width] = pair3.pop(0)
-            if(width % 2 == 0 and width > 127):
-                imgar_rearrange[height][width] = pair2.pop(0)
-            if(width % 2 == 1 and width > 127):
-                imgar_rearrange[height][width] = pair4.pop(0)
-    img = Image.fromarray(imgar_rearrange)
-    img.save(name+ '-FFT-rearrange.png')
-    np.array(img).tofile(name+"-FFT-rearrange.raw")
-    
-    '''
-    # check histrogram of two images to verify rearrange argorithm
-    img = cv2.imread('car-original.png',0)
-    plt.hist(img.ravel(),256,[0,256]); plt.show()
-    img = cv2.imread('car-FFT-spectrum.png',0)
-    plt.hist(img.ravel(),256,[0,256]); plt.show()
-    '''
+    FFT_Row()
 #-----------------------FFt--------------------------
 
     #creat a list of lists to do 1d fft on every row 
