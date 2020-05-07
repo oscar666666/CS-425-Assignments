@@ -6,13 +6,42 @@ import cv2
 import math
 import cmath
 
-def FFT_Row():
+def FFT_Row(fft_row):
+    fft_row1 = []
     I_list = []
     for i in range(0, 256, 1):
         I_list.append(i)
     for i in range(0, 256, 1):
         I_list[i] = reverseBits(i,8)
-    print(I_list)
+    #---store values in shuffled order
+    for i in range(0, 256, 1):
+        fft_row1.append(fft_row[I_list[i]])
+    #-----fft-----------------
+    M = 1
+    j = int(256/2)
+    n = int(math.log2(256))
+    fft_row2 = []
+    for i in range(0, n, 1):
+        for k in range(0, j, 1):
+            # Start of first sub-group
+            i1 = 2 * k * M
+            #Start of second sub-group
+            i2 = ((2 * k) + 1) * M
+            for u in range(0, M, 1):
+                Wnu = math.e**((complex(0,-1)*2*math.pi*u)/2*M)
+                #print(Wnu)
+                fft_row2.append(0.5*(fft_row1[i1+u] + (fft_row1[i2+u] * Wnu)))
+                
+            for u in range(0, M, 1):
+                Wnu = math.e**((complex(0,-1)*2*math.pi*u)/2*M)
+                fft_row2.append(0.5*(fft_row1[i1+u] - (fft_row1[i2+u] * Wnu)))
+        # Double the size of the sub-groups
+        M = int(M*2)
+
+        # Reduce number of sub-groups by half
+        j = int(j/2)
+    return fft_row2
+    
 
 #https://www.geeksforgeeks.org/reverse-bits-positive-integer-number-python/
 # Function to reverse bits of positive  
@@ -52,7 +81,6 @@ def FFT(name):
     F2 = imgar.copy()
 
 #-----------------------Rearrange array elements--------------------------
-    FFT_Row()
 #-----------------------FFt--------------------------
 
     #creat a list of lists to do 1d fft on every row 
@@ -60,18 +88,17 @@ def FFT(name):
     A1List = []
     for height in range(0, 256, 1):
         for width in range(0, 256, 1):
-            A1.append(F2[height][width])
+            A1.append(complex(F2[height][width],0))
         A1List.append(A1)
         A1 = []
 
     #1d fft
-
     for height in range(0, 256, 1):
-        A1List[height] = np.fft.fft(A1List[height])
-    
+        A1List[height] = FFT_Row(A1List[height])
     A1List = np.array(A1List)
     A1 = []
     A2List = []
+    #print(A1List)
 
     #creat a list of lists to do 1d fft on every column 
     for width in range(0, 256, 1):
@@ -81,15 +108,17 @@ def FFT(name):
         A1 = []
     #1d fft
     for height in range(0, 256, 1):
-        A2List[height] = np.fft.fft(A2List[height])
+        A2List[height] = FFT_Row(A2List[height])
     #convert to mangnitude/spectrom
     A2List = np.array(A2List)
     A2List = A2List.transpose()
+    #print(A2List)
     for height in range(0, 256, 1):
         for width in range(0, 256, 1):
             F2[height][width] = int(np.real(cmath.sqrt(A2List[height][width].real**2 + A2List[height][width].imag**2)))
     
     #-----------------output raw image--------------------
+    #print(F2)
     img = Image.fromarray(F2)
     img.save(name+ '-FFT-spectrom.png')
     np.array(img).tofile(name+"-FFT-spectrom.raw")
